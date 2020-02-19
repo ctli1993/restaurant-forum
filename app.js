@@ -40,3 +40,33 @@ app.listen(port, () => {
 });
 
 require("./routes")(app, passport);
+
+
+
+handleImgChange = e => {
+  if (e.target.files[0]) {
+    const image = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      this.setState({
+        image: image,
+        imageSrc: reader.result,
+        staff: {
+          ...this.state.staff,
+
+          imageSrc: reader.result,
+          image: image
+        }
+      });
+    };
+    reader.readAsDataURL(image);
+    this.setState(prevState => ({
+      error: {
+        // object that we want to update
+        ...prevState.error, // keep all other key-value pairs
+        image: false // update the value of specific key
+      }
+    }));
+  }
+};
