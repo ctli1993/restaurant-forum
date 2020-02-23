@@ -5,6 +5,8 @@ const Favorite = db.Favorite;
 const Followship = db.Followship;
 const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
+const Restaurant = db.Restaurant
+const Comment = db.Comment
 
 let userController = {
   signUpPage: (req, res) => {
@@ -102,8 +104,17 @@ let userController = {
   getUser: (req, res) => {
     if (Number(req.params.id) === req.user.id) {   
       // 要是該使用者才可以改
-      return User.findByPk(req.params.id).then(user => {
-        return res.render('userProfile',JSON.parse(JSON.stringify({ user: user })));
+      User.findByPk(req.params.id, {
+        include: [{ model: Comment, include: [Restaurant] }]
+      }).then(user => {
+        let commentedRestaurants = []
+        user.Comments.map(comment => {
+          commentedRestaurants.push(comment.Restaurant)
+        })
+        return res.render('userProfile', JSON.parse(JSON.stringify({
+          user,
+          commentedRestaurants
+        })));
       });
     } else { 
       req.flash("error_messages", "僅能觀看自己的資料");

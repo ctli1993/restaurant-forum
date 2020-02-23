@@ -16,3 +16,11 @@
     </div>
   </div>
 </div>
+
+<div class="card">
+  <h5 class="card-header">{{commentedRestaurants.length}} 間已評論餐廳</h5>
+  <div class="card-body">
+    {{#each commentedRestaurants}}
+    <a href="/restaurants/{{this.id}}"> <img src="{{this.image}}" width="100"> </a>
+    {{/each}}
+  </div>
