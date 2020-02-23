@@ -7,6 +7,7 @@ const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const Restaurant = db.Restaurant
 const Comment = db.Comment
+const Like = db.Like
 
 let userController = {
   signUpPage: (req, res) => {
@@ -78,6 +79,29 @@ let userController = {
       });
     });
   },
+
+  addLike: (req, res) => {
+    return Like.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    })
+     .then((restaurant) => {
+       return res.redirect('back')
+     })
+   },
+   
+   removeLike: (req, res) => {
+    return Like.findOne({where: {
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    }})
+      .then((favorite) => {
+        favorite.destroy()
+         .then((restaurant) => {
+           return res.redirect('back')
+         })
+      })
+   },
 
   getTopUser: (req, res) => {
     // 撈出所有 User 與 followers 資料
