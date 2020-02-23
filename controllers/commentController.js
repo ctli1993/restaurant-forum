@@ -1,5 +1,6 @@
 const db = require('../models')
 const Comment = db.Comment
+
 let commentController = {
   postComment: (req, res) => {
     return Comment.create({

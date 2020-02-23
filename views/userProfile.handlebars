@@ -1,0 +1,18 @@
+<div class="container my-3">
+  <div class="row" style="background-color: white;">
+    <div class="col-4">
+      <img src="{{user.image}}"  class="rounded-circle" width="300px" height="300px">
+    </div>
+    <div class="col-8">
+      <ul class="list-unstyled">
+        <li class="my-2"><strong>{{user.name}}</strong></li>
+        <li>{{user.email}}</li>
+        {{#ifCond user.id user.id}}
+        <li class="my-3">
+          <a href="/users/{{user.id}}/edit" class="btn btn-primary">edit</a>
+        </li>
+        {{/ifCond}}
+      </ul>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,9 @@ const bcrypt = require("bcryptjs");
 const db = require("../models");
 const User = db.User;
 const Favorite = db.Favorite;
-const Followship = db.Followship
+const Followship = db.Followship;
+const imgur = require("imgur-node-api");
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 
 let userController = {
   signUpPage: (req, res) => {
@@ -73,14 +75,12 @@ let userController = {
         return res.redirect("back");
       });
     });
-  }, 
+  },
 
   getTopUser: (req, res) => {
     // 撈出所有 User 與 followers 資料
     return User.findAll({
-      include: [
-        { model: User, as: 'Followers' }
-      ]
+      include: [{ model: User, as: "Followers" }]
     }).then(users => {
       // 整理 users 資料
       users = users.map(user => ({
@@ -89,35 +89,106 @@ let userController = {
         FollowerCount: user.Followers.length,
         // 判斷目前登入使用者是否已追蹤該 User 物件
         isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
-      }))
+      }));
       // 依追蹤者人數排序清單
-      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      return res.render('topUser', JSON.parse(JSON.stringify({ users: users })))
-    })
-  }, 
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount);
+      return res.render(
+        "topUser",
+        JSON.parse(JSON.stringify({ users: users }))
+      );
+    });
+  },
+
+  getUser: (req, res) => {
+    if (Number(req.params.id) === req.user.id) {   
+      // 要是該使用者才可以改
+      return User.findByPk(req.params.id).then(user => {
+        return res.render('userProfile',JSON.parse(JSON.stringify({ user: user })));
+      });
+    } else { 
+      req.flash("error_messages", "僅能觀看自己的資料");
+      return res.redirect("back");
+    }
+  },
+
+  editUser: (req, res) => {
+    if (Number(req.params.id) === req.user.id) {
+    return User.findByPk(req.params.id).then(user => {
+        return res.render(
+          "editUserProfile",
+          JSON.parse(
+            JSON.stringify({ user: user })
+          )
+        );
+      })} else {
+      req.flash("error_messages", "僅限修改自的資料，請重新操作");
+      res.redirect(`/users/${req.params.id}`);
+      }
+    },
+
+  putUser: (req, res) => {
+    if (!req.user.id) {
+      req.flash("error_messages", "僅限修改自的資料，請重新操作");
+      return res.redirect("back");
+    }
+
+    const { file } = req;
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID);
+      imgur.upload(file.path, (err, img) => {
+        return User.findByPk(req.params.id).then(user => {
+          user
+            .update({
+              name: req.body.name,
+              image: file ? img.data.link : user.image,
+            })
+            .then(restaurant => {
+              req.flash(
+                "success_messages",
+                "User was successfully to update"
+              );
+              res.redirect("/admin/users");
+            });
+        });
+      });
+    } else
+      return User.findByPk(req.params.id).then(user => {
+        user
+          .update({
+            name: req.body.name,
+            image: user.image,
+          })
+          .then(restaurant => {
+            req.flash(
+              "success_messages",
+              "User was successfully to update"
+            );
+            res.redirect("/admin/users");
+          });
+      });
+  },
+
   addFollowing: (req, res) => {
     return Followship.create({
       followerId: req.user.id,
       followingId: req.params.userId
-    })
-     .then((followship) => {
-       return res.redirect('back')
-     })
-   },
-   
-   removeFollowing: (req, res) => {
-    return Followship.findOne({where: {
-      followerId: req.user.id,
-      followingId: req.params.userId
-    }})
-      .then((followship) => {
-        followship.destroy()
-         .then((followship) => {
-           return res.redirect('back')
-         })
-      })
-   }
+    }).then(followship => {
+      return res.redirect("back");
+    });
+  },
 
+  removeFollowing: (req, res) => {
+    return Followship.findOne({
+      where: {
+        followerId: req.user.id,
+        followingId: req.params.userId
+      }
+    }).then(followship => {
+      followship.destroy().then(followship => {
+        return res.redirect("back");
+      });
+    });
+  }
 };
 
 module.exports = userController;
