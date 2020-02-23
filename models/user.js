@@ -7,7 +7,22 @@ module.exports = (sequelize, DataTypes) => {
     isAdmin: DataTypes.BOOLEAN
   }, {});
   User.associate = function(models) {
-    // associations can be defined here
+    User.hasMany(models.Comment)
+    User.belongsToMany(models.Restaurant, {
+      through: models.Favorite, 
+      foreignKey: 'UserId', 
+      as: 'FavoritedRestaurants'
+    })
+    User.belongsToMany(User, {
+      through: models.Followship,
+      foreignKey: 'followingId',
+      as: 'Followers'
+    })
+    User.belongsToMany(User, {
+      through: models.Followship,
+      foreignKey: 'followerId',
+      as: 'Followings'
+    })
   };
   return User;
 };

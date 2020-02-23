@@ -2,6 +2,7 @@ const restController = require('../controllers/restController.js')
 const adminController = require('../controllers/adminController.js')
 const userController = require('../controllers/userController.js')
 const categoryController = require('../controllers/categoryController.js')
+const commentController = require('../controllers/commentController.js')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
@@ -25,6 +26,7 @@ module.exports = (app, passport) => {
     
     app.get('/', authenticated, (req, res) => res.redirect('restaurants'))
     app.get('/restaurants', authenticated, restController.getRestaurants)
+    app.get('/restaurants/feeds', authenticated, restController.getFeeds)
     app.get('/restaurants/:id', authenticated, restController.getRestaurant)
 
     app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
@@ -44,6 +46,17 @@ module.exports = (app, passport) => {
     app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
     app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
     app.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+
+    app.post('/comments', authenticated, commentController.postComment)
+    app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
+    app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+    app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
+
+    app.get('/users/top', authenticated, userController.getTopUser)
+
+    app.post('/following/:userId', authenticated, userController.addFollowing)
+    app.delete('/following/:userId', authenticated, userController.removeFollowing)
 
     app.get('/signup', userController.signUpPage)
     app.post('/signup', userController.signUp)
