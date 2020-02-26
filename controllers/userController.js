@@ -126,8 +126,6 @@ let userController = {
   },
 
   getUser: (req, res) => {
-    if (Number(req.params.id) === req.user.id) {   
-      // 要是該使用者才可以改
       User.findByPk(req.params.id, {
         include: [{ model: Comment, include: [Restaurant] }]
       }).then(user => {
@@ -136,14 +134,10 @@ let userController = {
           commentedRestaurants.push(comment.Restaurant)
         })
         return res.render('userProfile', JSON.parse(JSON.stringify({
-          user,
+          userProfile: user,
           commentedRestaurants
         })));
       });
-    } else { 
-      req.flash("error_messages", "僅能觀看自己的資料");
-      return res.redirect("back");
-    }
   },
 
   editUser: (req, res) => {
