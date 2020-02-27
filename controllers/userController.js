@@ -5,9 +5,9 @@ const Favorite = db.Favorite;
 const Followship = db.Followship;
 const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
-const Restaurant = db.Restaurant
-const Comment = db.Comment
-const Like = db.Like
+const Restaurant = db.Restaurant;
+const Comment = db.Comment;
+const Like = db.Like;
 
 let userController = {
   signUpPage: (req, res) => {
@@ -84,24 +84,23 @@ let userController = {
     return Like.create({
       UserId: req.user.id,
       RestaurantId: req.params.restaurantId
-    })
-     .then((restaurant) => {
-       return res.redirect('back')
-     })
-   },
-   
-   removeLike: (req, res) => {
-    return Like.findOne({where: {
-      UserId: req.user.id,
-      RestaurantId: req.params.restaurantId
-    }})
-      .then((favorite) => {
-        favorite.destroy()
-         .then((restaurant) => {
-           return res.redirect('back')
-         })
-      })
-   },
+    }).then(restaurant => {
+      return res.redirect("back");
+    });
+  },
+
+  removeLike: (req, res) => {
+    return Like.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    }).then(favorite => {
+      favorite.destroy().then(restaurant => {
+        return res.redirect("back");
+      });
+    });
+  },
 
   getTopUser: (req, res) => {
     // 撈出所有 User 與 followers 資料
@@ -126,34 +125,52 @@ let userController = {
   },
 
   getUser: (req, res) => {
-      User.findByPk(req.params.id, {
-        include: [{ model: Comment, include: [Restaurant] }]
-      }).then(user => {
-        let commentedRestaurants = []
-        user.Comments.map(comment => {
-          commentedRestaurants.push(comment.Restaurant)
-        })
-        return res.render('userProfile', JSON.parse(JSON.stringify({
-          userProfile: user,
-          commentedRestaurants
-        })));
+    User.findByPk(req.params.id, {
+      include: [
+        { model: Comment, include: [Restaurant] },
+        { model: Restaurant, as: "FavoritedRestaurants" },
+        { model: Restaurant, as: "LikedRestaurants" },
+        { model: User, as: "Followers" },
+        { model: User, as: "Followings" }
+      ]
+    }).then(user => {
+      let commentedRestaurants = [];
+      const isFollowed =  req.user.Followings.map(d => d.id).includes(user.id)
+      const followerNum = user.Followers.length
+      const followingNum = user.Followings.length
+      const favoritedRestNum = user.FavoritedRestaurants.length
+      user.Comments.map(comment => {
+        commentedRestaurants.push(comment.Restaurant);
       });
+      return res.render(
+        "userProfile",
+        JSON.parse(
+          JSON.stringify({
+            userProfile: user,
+            commentedRestaurants,
+            isFollowed, 
+            followerNum,
+            followingNum, 
+            favoritedRestNum
+          })
+        )
+      );
+    });
   },
 
   editUser: (req, res) => {
     if (Number(req.params.id) === req.user.id) {
-    return User.findByPk(req.params.id).then(user => {
+      return User.findByPk(req.params.id).then(user => {
         return res.render(
           "editUserProfile",
-          JSON.parse(
-            JSON.stringify({ user: user })
-          )
+          JSON.parse(JSON.stringify({ user: user }))
         );
-      })} else {
+      });
+    } else {
       req.flash("error_messages", "僅限修改自的資料，請重新操作");
       res.redirect(`/users/${req.params.id}`);
-      }
-    },
+    }
+  },
 
   putUser: (req, res) => {
     if (!req.user.id) {
@@ -169,13 +186,10 @@ let userController = {
           user
             .update({
               name: req.body.name,
-              image: file ? img.data.link : user.image,
+              image: file ? img.data.link : user.image
             })
             .then(restaurant => {
-              req.flash(
-                "success_messages",
-                "User was successfully to update"
-              );
+              req.flash("success_messages", "User was successfully to update");
               res.redirect("/admin/users");
             });
         });
@@ -185,13 +199,10 @@ let userController = {
         user
           .update({
             name: req.body.name,
-            image: user.image,
+            image: user.image
           })
           .then(restaurant => {
-            req.flash(
-              "success_messages",
-              "User was successfully to update"
-            );
+            req.flash("success_messages", "User was successfully to update");
             res.redirect("/admin/users");
           });
       });
