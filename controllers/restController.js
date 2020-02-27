@@ -66,7 +66,8 @@ let restController = {
         { model: Comment, include: [User] }
       ]
     }).then(restaurant => {
-      restaurant.increment("viewCounts");
+      restaurant.increment('viewCounts')
+      // restaurant.reload().then((restaurant) => restaurant.increment("viewCounts"));
       const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(
         req.user.id
       );
