@@ -6,17 +6,16 @@ const fs = require("fs");
 const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 
-const adminService = require('../services/adminService')
-
+const adminService = require("../services/adminService");
 
 const adminController = {
   getRestaurants: (req, res) => {
-   adminService.getRestaurants(req, res, (data) => {
-    return res.render(
-          "admin/restaurants",
-          JSON.parse(JSON.stringify({ data }))
-        );
-   })
+    adminService.getRestaurants(req, res, data => {
+      return res.render(
+        "admin/restaurants",
+        JSON.parse(JSON.stringify({ data }))
+      );
+    });
   },
 
   getUsers: (req, res) => {
@@ -93,15 +92,12 @@ const adminController = {
   },
 
   getRestaurant: (req, res) => {
-    console.log(req.params.id);
-    return Restaurant.findByPk(req.params.id, { include: [Category] }).then(
-      restaurant => {
-        return res.render(
-          "admin/restaurant",
-          JSON.parse(JSON.stringify({ restaurant: restaurant }))
-        );
-      }
-    );
+    adminService.getRestaurant(req, res, data => {
+      return res.render(
+        "admin/restaurant",
+        JSON.parse(JSON.stringify({ data }))
+      );
+    });
   },
 
   editRestaurant: (req, res) => {
