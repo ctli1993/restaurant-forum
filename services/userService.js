@@ -9,7 +9,7 @@ const Like = db.Like;
 const imgur = require("imgur-node-api");
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 
-let userController = {
+let userService = {
   signUpPage: (req, res) => {
     return res.render("signup");
   },
@@ -206,4 +206,4 @@ let userController = {
   }
 };
 
-module.exports = userController;
+module.exports = userService;

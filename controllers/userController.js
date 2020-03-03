@@ -70,16 +70,9 @@ let userController = {
   },
 
   removeLike: (req, res) => {
-    return Like.findOne({
-      where: {
-        UserId: req.user.id,
-        RestaurantId: req.params.restaurantId
-      }
-    }).then(favorite => {
-      favorite.destroy().then(restaurant => {
-        return res.redirect("back");
-      });
-    });
+   userService.removeLike(req, res, data => {
+     return res.redirect('back')
+   })
   },
 
   getTopUser: (req, res) => {
