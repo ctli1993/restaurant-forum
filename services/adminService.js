@@ -1,26 +1,28 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const imgur = require("imgur-node-api");
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID;
 const db = require("../models");
 const Restaurant = db.Restaurant;
 const Category = db.Category;
+const User = db.User;
 
 const adminService = {
   getRestaurants: (req, res, callback) => {
     return Restaurant.findAll({ include: [Category] }).then(restaurants => {
-     callback({restaurants: restaurants})
+      callback({ restaurants: restaurants });
     });
   },
 
   getRestaurant: (req, res, callback) => {
-    return Restaurant.findByPk(req.params.id, { include: [Category] }).then(restaurant => {
-       callback({restaurant: restaurant})
+    return Restaurant.findByPk(req.params.id, { include: [Category] }).then(
+      restaurant => {
+        callback({ restaurant: restaurant });
       }
     );
-  }, 
+  },
 
   postRestaurant: (req, res, callback) => {
     if (!req.body.name) {
-      return callback ({status: 'error', message: "name didn't exist"})
+      return callback({ status: "error", message: "name didn't exist" });
     }
 
     const { file } = req;
@@ -36,7 +38,10 @@ const adminService = {
           image: file ? img.data.link : null,
           CategoryId: req.body.categoryId
         }).then(restaurant => {
-          callback({status: "success_messages", message: "restaurant was successfully created"});
+          callback({
+            status: "success_messages",
+            message: "restaurant was successfully created"
+          });
         });
       });
     } else {
@@ -49,14 +54,17 @@ const adminService = {
         image: null,
         CategoryId: req.body.categoryId
       }).then(restaurant => {
-        callback({status: "success_messages", message: "restaurant was successfully created"})
+        callback({
+          status: "success_messages",
+          message: "restaurant was successfully created"
+        });
       });
     }
   },
 
   putRestaurant: (req, res, callback) => {
     if (!req.body.name) {
-      return callback ({status: 'error', message: "name didn't exist"})
+      return callback({ status: "error", message: "name didn't exist" });
     }
 
     const { file } = req;
@@ -75,7 +83,10 @@ const adminService = {
               CategoryId: req.body.categoryId
             })
             .then(restaurant => {
-              callback({status: "success_messages", message: "restaurant was successfully updated"})
+              callback({
+                status: "success_messages",
+                message: "restaurant was successfully updated"
+              });
             });
         });
       });
@@ -92,22 +103,41 @@ const adminService = {
             CategoryId: req.body.categoryId
           })
           .then(restaurant => {
-            callback({status: "success_messages", message: "restaurant was successfully updated"})
+            callback({
+              status: "success_messages",
+              message: "restaurant was successfully updated"
+            });
           });
       });
   },
 
   deleteRestaurant: (req, res, callback) => {
-    return Restaurant.findByPk(req.params.id)
-    .then((restaurant) => {
-      restaurant.destroy()
-      .then((restaurant) => {
-       callback({status: 'success', message: ''})
-      })
-    })
-  }
+    return Restaurant.findByPk(req.params.id).then(restaurant => {
+      restaurant.destroy().then(restaurant => {
+        callback({ status: "success", message: "" });
+      });
+    });
+  },
 
-  
-}
+  getUsers: (req, res, callback) => {
+    return User.findAll().then(users => {
+      return callback({ users: users });
+    });
+  }, 
 
-module.exports = adminService
+  putUsers: (req, res, callback) => {
+    return User.findByPk(req.params.id).then(user => {
+      user
+        .update({
+          isAdmin: !user.isAdmin
+        })
+        .then(user => {
+          callback({status: 'success', message: 'user was successfully updated'})
+        });
+    });
+  },
+
+
+};
+
+module.exports = adminService;

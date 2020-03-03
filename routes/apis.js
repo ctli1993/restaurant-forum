@@ -27,6 +27,7 @@ router.get('/restaurants/feeds', authenticated, restController.getFeeds)
 router.get('/restaurants/:id', authenticated, restController.getRestaurant)
 router.get('/restaurants/:id/dashboard', authenticated, restController.getDashboard)
 
+router.get('/admin', authenticated, authenticatedAdmin, (req, res) => res.redirect('/api/admin/restaurants'))
 router.get('/admin/restaurants', authenticated, authenticatedAdmin, adminController.getRestaurants )
 router.get('/admin/restaurants/:id', authenticated, authenticatedAdmin, adminController.getRestaurant)
 router.post('/admin/restaurants', upload.single('image'), authenticated, authenticatedAdmin, adminController.postRestaurant)
@@ -37,6 +38,9 @@ router.get('/admin/categories', authenticated, authenticatedAdmin, categoryContr
 router.post('/admin/categories', authenticated, authenticatedAdmin, categoryController.postCategory)
 router.put('/admin/categories/:id', authenticated, authenticatedAdmin, categoryController.putCategory)
 router.delete('/admin/categories/:id', authenticated, authenticatedAdmin, categoryController.deleteCategory)
+
+router.get('/admin/users', authenticatedAdmin, adminController.getUsers)
+router.put('/admin/users/:id', authenticatedAdmin, adminController.putUsers)
 
 router.get('/users/top', authenticated, userController.getTopUser)
 router.get('/users/:id', authenticated, userController.getUser)
