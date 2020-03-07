@@ -60,7 +60,7 @@
       <h5 class="card-header">{{followerNum}} 位粉絲 </h5>
       <div class="card-body">
         {{#each userProfile.Followers}}
-        <a href="/restaurants/{{this.id}}"> <img src="{{this.image}}" width="100"> </a>
+        <a href="/users/{{this.id}}"> <img src="{{this.image}}" width="100"> </a>
         {{/each}}
       </div>
     </div>
@@ -69,7 +69,7 @@
       <h5 class="card-header">{{followingNum}} 位收藏對象 </h5>
       <div class="card-body">
         {{#each userProfile.Followings}}
-        <a href="/restaurants/{{this.id}}"> <img src="{{this.image}}" width="100"> </a>
+        <a href="/users/{{this.id}}"> <img src="{{this.image}}" width="100"> </a>
         {{/each}}
       </div>
     </div>

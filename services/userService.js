@@ -151,10 +151,6 @@ let userService = {
   },
 
   putUser: (req, res, callback) => {
-    if (!req.user.id) {
-      return callback({ status:"error_messages", message:"僅限修改自的資料，請重新操作"})
-    }
-
     const { file } = req;
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID);
