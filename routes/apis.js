@@ -9,7 +9,7 @@ const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 const passport = require('../config/passport')
 
-const authenticated = passport.authenticate('jwt', { session: false })
+// const authenticated = passport.authenticate('jwt', { session: false })
 
 const authenticatedAdmin = (req, res, next) => {
   if (req.user) {
