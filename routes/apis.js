@@ -7,7 +7,7 @@ const restController = require('../controllers/api/restController.js')
 const commentController = require('../controllers/api/commentController.js')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
-const passport = require('../config/passport')
+// const passport = require('../config/passport')
 
 // const authenticated = passport.authenticate('jwt', { session: false })
 
