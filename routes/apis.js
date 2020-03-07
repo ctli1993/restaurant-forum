@@ -55,8 +55,8 @@ router.delete('/following/:userId',   userController.removeFollowing)
 router.post('/comments',   commentController.postComment)
 router.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 
-router.post('/signup', userController.signUp)
-router.post('/signin', userController.signIn)
+// router.post('/signup', userController.signUp)
+// router.post('/signin', userController.signIn)
 
 
 module.exports = router 
